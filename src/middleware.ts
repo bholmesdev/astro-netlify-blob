@@ -11,10 +11,14 @@ const actionCookieForwarding = defineMiddleware(async (ctx, next) => {
   const actionStore = getStore("action-session");
 
   const sessionId = ctx.cookies.get("action-session-id")?.value;
-  if (sessionId) {
-    const { actionName, actionResult } = await actionStore.get(sessionId, {
-      type: "json",
-    });
+  const data = sessionId
+    ? await actionStore.get(sessionId, {
+        type: "json",
+      })
+    : undefined;
+
+  if (data) {
+    const { actionName, actionResult } = data;
     setActionResult(actionName, actionResult);
 
     await actionStore.delete(sessionId);
