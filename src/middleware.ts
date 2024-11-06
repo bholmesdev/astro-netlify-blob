@@ -26,8 +26,10 @@ const actionCookieForwarding = defineMiddleware(async (ctx, next) => {
     return next();
   }
 
+  console.log("action", action);
   if (action?.calledFrom === "form") {
     const actionResult = await action.handler();
+    console.log("result", actionResult);
     if (actionResult.error?.code === "NOT_FOUND") {
       return next();
     }
