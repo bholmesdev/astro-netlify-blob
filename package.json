@@ -1,0 +1,17 @@
+{
+  "name": "@example/minimal",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^5.5.4",
+    "@netlify/blobs": "^8.1.0",
+    "astro": "^5.0.0-beta.6"
+  }
+}

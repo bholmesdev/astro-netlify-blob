@@ -1,0 +1,24 @@
+---
+import { actions } from 'astro:actions';
+
+export const prerender = false;
+
+const result = Astro.getActionResult(actions.notFound);
+console.log(result);
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Astro</h1>
+		<form method="POST" action={actions.notFound}>
+			<button>Run actions</button>
+		</form>
+	</body>
+</html>
