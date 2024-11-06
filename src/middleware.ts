@@ -6,6 +6,8 @@ import { randomUUID } from "node:crypto";
 const actionCookieForwarding = defineMiddleware(async (ctx, next) => {
   if (ctx.isPrerendered) return next();
 
+  console.log(ctx.request.headers);
+
   const { action, setActionResult, serializeActionResult } =
     getActionContext(ctx);
   const actionStore = getStore("action-session");
@@ -29,16 +31,20 @@ const actionCookieForwarding = defineMiddleware(async (ctx, next) => {
   console.log("action", action);
   if (action?.calledFrom === "form") {
     const actionResult = await action.handler();
-    console.log("result", actionResult);
     if (actionResult.error?.code === "NOT_FOUND") {
       return next();
     }
 
     const sessionId = randomUUID();
-    actionStore.setJSON(sessionId, {
+    await actionStore.setJSON(sessionId, {
       actionName: action.name,
       actionResult: serializeActionResult(actionResult),
     });
+
+    console.log(
+      "store set",
+      await actionStore.get(sessionId, { type: "json" }),
+    );
     ctx.cookies.set("action-session-id", sessionId);
 
     if (actionResult.error) {
