@@ -3,7 +3,7 @@ import { actions } from "astro:actions";
 
 export const prerender = false;
 
-const result = Astro.getActionResult(actions.notFound);
+const result = Astro.getActionResult(actions.good);
 console.log(result);
 ---
 
@@ -18,7 +18,11 @@ console.log(result);
     <body>
         <h1>Astro</h1>
         <form method="POST" action={actions.notFound}>
-            <button>Run actions</button>
+            <button>Run not found</button>
+        </form>
+        <form method="POST" action={actions.good}>
+            <button>Run good</button>
+            {result?.data?.good && <p>Saul Goodman</p>}
         </form>
     </body>
 </html>
