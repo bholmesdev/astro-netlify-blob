@@ -15,7 +15,7 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0
       astro:
-        specifier: file:./astro-5.0.0-beta.6.tgz
+        specifier: file:astro-5.0.0-beta.6.tgz
         version: file:astro-5.0.0-beta.6.tgz(rollup@4.24.4)(typescript@5.6.3)
 
 packages:
@@ -695,7 +695,7 @@ packages:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
 
   astro@file:astro-5.0.0-beta.6.tgz:
-    resolution: {integrity: sha512-89gCBuxeO1WvTWv47OUg0VMCA7uVpXgeLsuu3tTG+M3d61ojbCDmx/vbgVtJMXRGQO/wrJy51yyQfkT+WTK6TQ==, tarball: file:astro-5.0.0-beta.6.tgz}
+    resolution: {integrity: sha512-X7Vohosw4afv8gcXlBtwde37uh/zdMi841/fd5mxj5BCi7Uwp2GZvzTfTYXBIcbl3h/Jg221zrijmivta8KfIQ==, tarball: file:astro-5.0.0-beta.6.tgz}
     version: 5.0.0-beta.6
     engines: {node: ^18.17.1 || ^20.3.0 || >=21.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
