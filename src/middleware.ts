@@ -1,57 +1,64 @@
-import { getStore } from "@netlify/blobs";
+import { defineMiddleware } from "astro:middleware";
 import { getActionContext } from "astro:actions";
-import { defineMiddleware } from "astro/middleware";
 import { randomUUID } from "node:crypto";
+import { getStore } from "@netlify/blobs";
 
-const actionCookieForwarding = defineMiddleware(async (ctx, next) => {
-  if (ctx.isPrerendered) return next();
+export const onRequest = defineMiddleware(async (context, next) => {
+  if (context.isPrerendered) return next();
 
   const { action, setActionResult, serializeActionResult } =
-    getActionContext(ctx);
+    getActionContext(context);
+  // Create a Blob store to persist action results with Netlify Blob
   const actionStore = getStore("action-session");
-  const sessionId = ctx.cookies.get("action-session-id")?.value;
-  const data = sessionId
+
+  // If an action result was forwarded as a cookie, set the result
+  // to be accessible from `Astro.getActionResult()`
+  const sessionId = context.cookies.get("action-session-id")?.value;
+  const session = sessionId
     ? await actionStore.get(sessionId, {
         type: "json",
       })
     : undefined;
 
-  if (data) {
-    const { actionName, actionResult } = data;
-    setActionResult(actionName, actionResult);
+  if (session) {
+    setActionResult(session.actionName, session.actionResult);
 
+    // Optional: delete the session after the page is rendered.
+    // Feel free to implement your own persistence strategy.
     await actionStore.delete(sessionId);
-    ctx.cookies.delete("action-session-id");
+    context.cookies.delete("action-session-id");
     return next();
   }
 
+  // If an action was called from an HTML form action,
+  // call the action handler and redirect to the destination page.
   if (action?.calledFrom === "form") {
     const actionResult = await action.handler();
-    if (actionResult.error?.code === "NOT_FOUND") {
-      return next();
-    }
 
+    // Persist the action result using session storage.
     const sessionId = randomUUID();
     await actionStore.setJSON(sessionId, {
       actionName: action.name,
       actionResult: serializeActionResult(actionResult),
     });
 
-    ctx.cookies.set("action-session-id", sessionId);
+    // Pass the session ID as a cookie
+    // to be retrieved after redirecting to the page.
+    context.cookies.set("action-session-id", sessionId);
 
+    // Redirect back to the previous page on error.
     if (actionResult.error) {
-      const referer = ctx.request.headers.get("Referer");
+      const referer = context.request.headers.get("Referer");
       if (!referer) {
         throw new Error(
           "Internal: Referer unexpectedly missing from Action POST request.",
         );
       }
-      return ctx.redirect(referer);
+      return context.redirect(referer);
     }
-    return ctx.redirect(ctx.originPathname);
+    // Redirect to the destination page on success.
+    return context.redirect(context.originPathname);
   }
 
   return next();
 });
-
-export const onRequest = actionCookieForwarding;
